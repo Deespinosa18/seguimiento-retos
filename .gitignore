@@ -1,0 +1,25 @@
+# Python / Django
+.venv/
+__pycache__/
+*.pyc
+db.sqlite3
+
+# Secretos: nunca subir al repositorio
+.env
+.env.*
+!.env.example
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+
+# Android / Gradle
+.gradle/
+build/
+local.properties
+*.apk
+
+# Editores y registros
+.idea/
+registro-puntos-9-11.txt

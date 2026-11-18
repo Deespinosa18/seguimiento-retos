@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Seguimiento de Retos</string>
+    <string name="title_activity_main">Seguimiento de Retos</string>
+    <string name="package_name">com.seguimientoretos.app</string>
+    <string name="custom_url_scheme">com.seguimientoretos.app</string>
+</resources>
