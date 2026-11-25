@@ -3,6 +3,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 
 from .models import Avance, Reto, TareaSemanal
+from .resumen import resumen_reto
 from .semanas import crear_tareas_semanales
 from .serializers import AvanceSerializer, RetoSerializer, TareaSemanalSerializer
 
@@ -25,6 +26,11 @@ class RetoViewSet(viewsets.ModelViewSet):
         """Crea las semanas que falten (útil para retos creados antes de esta guía)."""
         creadas = crear_tareas_semanales(self.get_object())
         return Response({'creadas': creadas}, status=status.HTTP_200_OK)
+
+    @action(detail=True, methods=['get'])
+    def resumen(self, request, pk=None):
+        """Funcionalidad propia: cumplimiento, racha de semanas verdes y conteo por color."""
+        return Response(resumen_reto(self.get_object()))
 
 
 class AvanceViewSet(viewsets.ModelViewSet):

@@ -3,7 +3,9 @@ import { Injectable, inject } from '@angular/core';
 import { Observable, map } from 'rxjs';
 
 import { urlApi } from './api.config';
-import { Avance, NuevoAvance, NuevoReto, Pagina, Reto, TareaSemanal } from './modelos';
+import {
+  Avance, NuevoAvance, NuevoReto, Pagina, Reto, ResumenCumplimiento, TareaSemanal,
+} from './modelos';
 
 /** Solo habla con el backend. No guarda estado: eso es tarea de SeguimientoService. */
 @Injectable({ providedIn: 'root' })
@@ -25,6 +27,11 @@ export class RetosApi {
 
   generarSemanas(id: number): Observable<{ creadas: number }> {
     return this.http.post<{ creadas: number }>(`${this.base}/retos/${id}/generar-semanas/`, {});
+  }
+
+  /** Funcionalidad propia: GET /api/retos/{id}/resumen/ */
+  resumenReto(id: number): Observable<ResumenCumplimiento> {
+    return this.http.get<ResumenCumplimiento>(`${this.base}/retos/${id}/resumen/`);
   }
 
   listarTareas(): Observable<TareaSemanal[]> {

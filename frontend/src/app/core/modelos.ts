@@ -49,6 +49,21 @@ export interface TareaSemanal {
   actualizado: string;
 }
 
+/** Funcionalidad propia: resumen de cumplimiento que calcula el backend. */
+export interface ResumenCumplimiento {
+  reto: number;
+  total_semanas: number;
+  semanas_cerradas: number;
+  semanas_restantes: number;
+  conteo: { VERDE: number; AMARILLO: number; ROJO: number; ABIERTA: number; PENDIENTE: number };
+  cumplimiento: number | null;
+  nivel: 'BUENO' | 'REGULAR' | 'BAJO' | 'SIN_DATOS';
+  racha_verde: number;
+  semana_actual: number | null;
+  porcentaje_actual: number | null;
+  total_avances: number;
+}
+
 /** Respuesta paginada de Django REST Framework. */
 export interface Pagina<T> {
   count: number;

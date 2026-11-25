@@ -14,6 +14,10 @@ export function urlApi(): string {
     // El emulador llega a la PC con 10.0.2.2; un teléfono real, con la IP de la PC.
     return `http://${IP_TELEFONO_REAL || '10.0.2.2'}:${PUERTO}/api`;
   }
-  // Navegador de la PC (ionic serve).
+  // Navegador de la PC con ng serve: el proxy (proxy.conf.json) reenvía /api al backend.
+  if (location.port === '8100' || location.port === '4200') {
+    return '/api';
+  }
+  // Navegador de la PC (otros casos).
   return `http://127.0.0.1:${PUERTO}/api`;
 }

@@ -53,6 +53,8 @@ import { SeguimientoService } from '../core/seguimiento.service';
   styles: `
     .semana-actual { --background: var(--ion-color-primary-tint); }
     ion-progress-bar { margin-top: 6px; }
+    .resumen ion-badge { margin-right: 6px; }
+    .resumen ion-card-title ion-badge { margin-left: 8px; vertical-align: middle; }
   `,
   template: `
     <ion-header>
@@ -79,6 +81,34 @@ import { SeguimientoService } from '../core/seguimiento.service';
         </ion-card>
       } @else {
         <ion-text color="medium"><p>Cargando reto…</p></ion-text>
+      }
+
+      @if (resumen$ | async; as r) {
+        <ion-card class="resumen">
+          <ion-card-header>
+            <ion-card-subtitle>Resumen de cumplimiento</ion-card-subtitle>
+            <ion-card-title>
+              @if (r.cumplimiento === null) { Sin semanas cerradas }
+              @else { {{ r.cumplimiento }} % cumplido }
+              <ion-badge [color]="colorNivel[r.nivel]">{{ etiquetaNivel[r.nivel] }}</ion-badge>
+            </ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            @if (r.cumplimiento !== null) {
+              <ion-progress-bar [value]="r.cumplimiento / 100" [color]="colorNivel[r.nivel]"></ion-progress-bar>
+            }
+            <p>
+              <ion-badge color="success">{{ r.conteo.VERDE }} verdes</ion-badge>
+              <ion-badge color="warning">{{ r.conteo.AMARILLO }} amarillas</ion-badge>
+              <ion-badge color="danger">{{ r.conteo.ROJO }} rojas</ion-badge>
+            </p>
+            <p>Racha actual: <strong>{{ r.racha_verde }}</strong> semana(s) verde(s) seguidas.</p>
+            <p>
+              Semanas cerradas: {{ r.semanas_cerradas }} de {{ r.total_semanas }} · faltan {{ r.semanas_restantes }}.
+              @if (r.semana_actual !== null) { Semana actual: {{ r.semana_actual }} ({{ r.porcentaje_actual }} %). }
+            </p>
+          </ion-card-content>
+        </ion-card>
       }
 
       <ion-segment [value]="vista()" (ionChange)="vista.set($any($event).detail.value)">
@@ -175,6 +205,13 @@ export class RetoDetallePage {
 
   protected readonly reto$ = this.api.obtenerReto(this.id).pipe(catchError(() => of(null)));
   protected readonly semanas$ = this.seguimiento.semanasDeReto$(this.id);
+
+  // Funcionalidad propia: el resumen se vuelve a pedir cada vez que cambian las semanas.
+  protected readonly resumen$ = this.semanas$.pipe(
+    switchMap(() => this.api.resumenReto(this.id).pipe(catchError(() => of(null)))),
+  );
+  protected readonly etiquetaNivel = { BUENO: 'Bueno', REGULAR: 'Regular', BAJO: 'Bajo', SIN_DATOS: 'Sin datos' };
+  protected readonly colorNivel = { BUENO: 'success', REGULAR: 'warning', BAJO: 'danger', SIN_DATOS: 'medium' };
 
   private readonly recargarAvances$ = new BehaviorSubject<void>(undefined);
   protected readonly avances$ = this.recargarAvances$.pipe(

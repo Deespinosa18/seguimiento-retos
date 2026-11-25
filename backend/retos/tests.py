@@ -60,3 +60,20 @@ class TareaSemanalTests(APITestCase):
         url = reverse('tareasemanal-detail', args=[tarea.id])
         respuesta = self.client.patch(url, {'porcentaje': 100}, format='json')
         self.assertEqual(respuesta.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_resumen_calcula_cumplimiento_y_racha(self):
+        reto = Reto.objects.create(titulo='Resumen', fecha_inicio=HOY)
+        for semana, porcentaje, hace in [(4, 0, 27), (5, 100, 20), (6, 100, 13)]:
+            TareaSemanal.objects.create(
+                reto=reto, semana=semana, porcentaje=porcentaje,
+                fecha_inicio=HOY - timedelta(days=hace), fecha_fin=HOY - timedelta(days=hace - 6),
+            )
+        TareaSemanal.objects.create(
+            reto=reto, semana=7, porcentaje=40, fecha_inicio=HOY, fecha_fin=HOY + timedelta(days=6),
+        )
+        respuesta = self.client.get(reverse('reto-resumen', args=[reto.id]))
+        self.assertEqual(respuesta.status_code, status.HTTP_200_OK)
+        self.assertEqual(respuesta.data['cumplimiento'], 67)
+        self.assertEqual(respuesta.data['racha_verde'], 2)
+        self.assertEqual(respuesta.data['conteo']['ROJO'], 1)
+        self.assertEqual(respuesta.data['semana_actual'], 7)
